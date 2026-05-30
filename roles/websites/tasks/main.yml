@@ -1,0 +1,10 @@
+---
+
+- name: Configure PHP
+  import_tasks: php-fpm.yml
+
+- name: Install WordPress
+  import_tasks: wordpress.yml
+
+- name: Configure Nginx
+  import_tasks: nginx.yml

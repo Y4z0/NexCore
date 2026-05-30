@@ -1,0 +1,39 @@
+# roles/wordpress/templates/nginx.conf.j2
+server {
+    listen 80;
+    server_name {{ wp_domain }};
+    root {{ wp_dir }};
+    index index.php index.html;
+
+    client_max_body_size 64M;
+
+    location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+    location ~ \.php$ {
+        include fastcgi_params;
+        # RHEL PHP-FPM socket path (not /var/run/php/phpX.Y-fpm.sock)
+        fastcgi_pass unix:/run/php-fpm/www.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_intercept_errors on;
+    }
+
+    location ~ /\.(htaccess|htpasswd|git) {
+        deny all;
+    }
+
+    location = /wp-config.php {
+        deny all;
+    }
+
+    location = /xmlrpc.php {
+        deny all;
+        return 403;
+    }
+
+    location ~* \.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
+}

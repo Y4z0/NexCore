@@ -1,0 +1,121 @@
+---
+- name: Install WP-CLI for WordPress management
+  get_url:
+    url: https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+    dest: /usr/local/bin/wp
+    mode: '0755'
+
+- name: Create WordPress directory
+  file:
+    path: "{{ wp_dir }}"
+    state: directory
+    owner: "{{ wp_user }}"
+    group: "{{ wp_group }}"
+    mode: '0755'
+
+- name: Check if WordPress is already installed
+  stat:
+    path: "{{ wp_dir }}/wp-config.php"
+  register: wp_installed
+
+- name: Download WordPress core files
+  shell: 
+    cmd: >
+      /usr/local/bin/wp core download
+      --path={{ wp_dir }}
+      --locale={{ wp_locale }}
+  become_user: "{{ wp_user }}"
+  when: not wp_installed.stat.exists
+
+- name: Deploy wp-config.php from template
+  template:
+    src: wp-config.php.j2
+    dest: "{{ wp_dir }}/wp-config.php"
+    owner: "{{ wp_user }}"
+    group: "{{ wp_group }}"
+    mode: '0640'
+  when: not wp_installed.stat.exists
+
+- name: Install WordPress using WP-CLI
+  shell:
+    cmd: >
+      /usr/local/bin/wp core install
+      --url=http://{{ wp_domain }}
+      --title="{{ wp_site_title }}"
+      --admin_user={{ wp_admin_user }}
+      --admin_password={{ vault_wp_admin_password }}
+      --admin_email={{ wp_admin_email }}
+      --path={{ wp_dir }}
+  become_user: "{{ wp_user }}"
+  when: not wp_installed.stat.exists
+  no_log: true
+
+- name: Set secure file permissions for WordPress files
+  file:
+    path: "{{ wp_dir }}"
+    owner: "{{ wp_user }}"
+    group: "{{ wp_group }}"
+    mode: '0755'
+    recurse: yes
+  when: not wp_installed.stat.exists
+
+- name: Set strict permissions on wp-config.php
+  file:
+    path: "{{ wp_dir }}/wp-config.php"
+    owner: "{{ wp_user }}"
+    group: "{{ wp_group }}"
+    mode: '0640'
+  when: not wp_installed.stat.exists
+
+- name: Ensure uploads directory exists with correct permissions
+  file:
+    path: "{{ wp_dir }}/wp-content/uploads"
+    state: directory
+    owner: "{{ wp_user }}"
+    group: "{{ wp_group }}"
+    mode: '0775'
+  when: not wp_installed.stat.exists
+
+- name: Disable file editing from WordPress admin
+  lineinfile:
+    path: "{{ wp_dir }}/wp-config.php"
+    line: "define('DISALLOW_FILE_EDIT', true);"
+    insertbefore: "^/\\* That's all"
+  when: not wp_installed.stat.exists
+
+# --- SELinux ---
+
+- name: Set SELinux context for WordPress directory
+  sefcontext:
+    target: "{{ wp_dir }}(/.*)?"
+    setype: httpd_sys_rw_content_t
+    state: present
+  notify: restorecon wordpress
+
+- name: Allow Nginx/PHP-FPM to connect to the network (SELinux)
+  seboolean:
+    name: httpd_can_network_connect
+    state: yes
+    persistent: yes
+
+- name: Allow Nginx/PHP-FPM to connect to the database (SELinux)
+  seboolean:
+    name: httpd_can_network_connect_db
+    state: yes
+    persistent: yes
+
+# --- Firewall  ---
+
+- name: Open HTTP port in firewalld
+  firewalld:
+    service: http
+    permanent: yes
+    state: enabled
+    immediate: yes
+
+- name: Open HTTPS port in firewalld
+  firewalld:
+    service: https
+    permanent: yes
+    state: enabled
+    immediate: yes

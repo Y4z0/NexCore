@@ -1,0 +1,33 @@
+---
+- name: Deploy WordPress 
+  hosts: web
+  
+
+  pre_tasks:
+    - name: Verify target is a RHEL-based system
+      assert:
+        that:
+          - ansible_os_family == "RedHat"
+        fail_msg: "This playbook is intended for RHEL-based systems only (got: {{ ansible_os_family }})"
+
+    - name: Update all packages to latest
+      dnf:
+        name: "*"
+        state: latest
+        update_cache: yes
+
+- hosts: web
+  roles:
+    - websites
+    - database
+
+
+  post_tasks:
+    - name: Deployment summary
+      debug:
+        msg:
+          - "WordPress deployed successfully"
+          - "Site URL : http://{{ wp_domain }}"
+          - "Admin URL: http://{{ wp_domain }}/wp-admin"
+          - "DB name  : {{ wp_db_name }}"
+          - "Admin user: {{ wp_admin_user }}"

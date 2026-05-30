@@ -1,0 +1,14 @@
+---
+- name: restart php-fpm
+  systemd:
+    name: php-fpm         
+    state: restarted
+
+- name: reload nginx
+  systemd:
+    name: nginx
+    state: reloaded
+
+- name: restorecon wordpress
+  command: restorecon -Rv {{ wp_dir }}
+  changed_when: false

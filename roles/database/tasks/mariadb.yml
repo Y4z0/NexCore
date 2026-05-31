@@ -65,24 +65,6 @@
     login_password: "{{ vault_mariadb_root_password }}"
     query: "FLUSH PRIVILEGES;"
 
-
-- name: Create WordPress database
-  mysql_db:
-    name: "{{ wp_db_name }}"
-    state: present
-    login_unix_socket: /var/lib/mysql/mysql.sock
-    encoding: utf8mb4
-    collation: utf8mb4_unicode_ci
-
-- name: Create WordPress database user with specific privileges
-  mysql_user:
-    name: "{{ wp_db_user }}"
-    password: "{{ vault_wp_db_password }}"
-    priv: "{{ wp_db_name }}.*:ALL"
-    state: present
-    login_unix_socket: /var/lib/mysql/mysql.sock
-  no_log: true
-
 - name: Remove anonymous MySQL users
   mysql_user:
     name: ""
@@ -94,4 +76,37 @@
   mysql_db:
     name: test
     state: absent
+    login_unix_socket: /var/lib/mysql/mysql.sock
+
+# Wordpress DB
+- name: Create WordPress database
+  mysql_db:
+    name: "{{ wp_db_name }}"
+    state: present
+    login_unix_socket: /var/lib/mysql/mysql.sock
+    collation: utf8mb4_unicode_ci
+
+- name: Create WordPress database user with specific privileges
+  mysql_user:
+    name: "{{ wp_db_user }}"
+    password: "{{ vault_wp_db_password }}"
+    priv: "{{ wp_db_name }}.*:ALL"
+    state: present
+    login_unix_socket: /var/lib/mysql/mysql.sock
+
+  
+# MediaWiki DB
+- name: Create MediaWiki database
+  community.mysql.mysql_db:
+    name:  "{{ mediawiki_db_name }}"
+    state: present
+    login_unix_socket: /var/lib/mysql/mysql.sock
+
+- name: Create MediaWiki DB user
+  community.mysql.mysql_user:
+    name:     "{{ mediawiki_db_user }}"
+    password: "{{ vault_mediawiki_password }}"
+    priv:     "{{ mediawiki_db_name }}.*:ALL"
+    host:     "{{ hostvars['serverc']['ansible_default_ipv4']['address'] }}"
+    state:    present
     login_unix_socket: /var/lib/mysql/mysql.sock

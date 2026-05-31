@@ -1,0 +1,8 @@
+127.0.0.1     localhost 
+127.0.0.1     {{inventory_hostname}} {{inventory_hostname}}.{{domain}}
+
+# Nexcore hosts
+{% for host in group['all_servers'] | sort %}
+{{hostvars[host]['ansible_host']}} {{ host }} {{host}}.{{domain}}
+{% endfor %}
+

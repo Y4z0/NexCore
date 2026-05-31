@@ -1,0 +1,39 @@
+- name: Create MediaWiki install directory
+  ansible.builtin.file:
+    path:  "{{ mediawiki_install_dir }}"
+    state: directory
+    owner: "{{ webserver_user }}"
+    group: "{{ webserver_group }}"
+    mode:  "0755"
+
+- name: Download MediaWiki 
+  ansible.builtin.get_url:
+    url: "https://releases.wikimedia.org/mediawiki/{{ mediawiki_version }}/mediawiki-{{ mediawiki_minor }}.tar.gz"    
+    dest:     "/tmp/mediawiki.tar.gz"
+    mode:     "0644"
+
+- name: Extract MediaWiki archive
+  ansible.builtin.unarchive:
+    src:        "/tmp/mediawiki.tar.gz"
+    dest:       "{{mediawiki_install_dir}}"
+    remote_src: true
+    extra_opts: ["--strip-components=1"]
+    creates:    "{{ mediawiki_install_dir }}/index.php"
+    owner: "{{ webserver_user }}"
+    group: "{{ webserver_group }}"
+
+- name: Set ownership on MediaWiki directory
+  ansible.builtin.file:
+    path:    "{{ mediawiki_install_dir }}"
+    owner: "{{ webserver_user }}"
+    group: "{{ webserver_group }}"
+    recurse: true
+
+# --- SELinux ---
+
+- name: Set SELinux file context for MediaWiki directory
+  sefcontext:
+    target:  "{{ mediawiki_install_dir }}(/.*)?"
+    setype:  httpd_sys_rw_content_t
+    state:   present
+  notify: Restore mediawiki selinux context

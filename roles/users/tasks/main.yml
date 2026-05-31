@@ -1,0 +1,54 @@
+---
+- name: Verify that the user group exists
+  ansible.builtin.group:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ user_groups }}"
+
+- name: Modify sudo to allow the ops_group sudo access
+  ansible.builtin.copy:
+    content: "{{ item.name }} ALL=(ALL) NOPASSWD:ALL\n"
+    dest: "/etc/sudoers.d/{{ item.name }}"
+    owner: root
+    group: root
+    mode: "0440"
+    state: present
+    validate: /usr/sbin/visudo -cf %s
+  when: item.sudo == true
+  loop: "{{ nexcore_users }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Create user accounts
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    groups: "{{ item.groups }}"
+    append: true
+    create_home: true
+    shell: "{{ shell }}"
+    password: "!"
+    password_lock: true
+    state: present
+  loop: "{{ nexcore_users }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Add SSH authorized keys
+  ansible.posix.authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.ssh_key }}"
+    state: present
+  loop: "{{ nexcore_users }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Create Company_Share directory in user home
+  ansible.builtin.file:
+    path:  "/home/{{ item.name }}/Company_Share"
+    state: directory
+    owner: "{{ item.name }}"
+    group: "{{ item.groups[0] }}"
+    mode:  "0700"
+  loop: "{{ nexcore_users }}"
+  loop_control:
+    label: "{{ item.name }}"

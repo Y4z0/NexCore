@@ -10,10 +10,17 @@
     enabled: yes
     state: started
 
-- name: Deploy Nginx WordPress configuration
+- name: Deploy WordPress configuration
   template:
-    src: nginx.conf.j2
+    src: wp-nginx.j2
     dest: /etc/nginx/conf.d/{{ wp_domain }}.conf
+    mode: '0644'
+  notify: reload nginx
+
+- name: Deploy Mediawiki configuration
+  template:
+    src: mediawiki-nginx.j2
+    dest: /etc/nginx/conf.d/{{ mediawiki_domain }}.conf
     mode: '0644'
   notify: reload nginx
 
@@ -22,3 +29,17 @@
     path: /etc/nginx/conf.d/default.conf
     state: absent
   notify: reload nginx
+
+# --- SELinux ---
+
+- name: Allow Nginx/PHP-FPM to connect to the network (SELinux)
+  seboolean:
+    name: httpd_can_network_connect
+    state: yes
+    persistent: yes
+
+- name: Allow Nginx/PHP-FPM to connect to the database (SELinux)
+  seboolean:
+    name: httpd_can_network_connect_db
+    state: yes
+    persistent: yes

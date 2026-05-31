@@ -1,8 +1,6 @@
 ---
-- name: Deploy WordPress 
-  hosts: web
-  
-
+- name: Deploy
+  hosts: all_servers
   pre_tasks:
     - name: Verify target is a RHEL-based system
       assert:
@@ -14,14 +12,29 @@
       dnf:
         name: "*"
         state: latest
-        update_cache: yes
+        update_cache: true
 
-- hosts: web
+    - name: Make sure wget and tar are installed
+      ansible.builtin.dnf:
+        name:
+          - wget
+          - tar
+        state: present
+
+- name: Create users
+  hosts: all_servers
+  roles:
+    - users
+
+- name: Configure webserver
+  hosts: web
   roles:
     - websites
+
+- name: Configure database
+  hosts: web
+  roles:
     - database
-
-
   post_tasks:
     - name: Deployment summary
       debug:

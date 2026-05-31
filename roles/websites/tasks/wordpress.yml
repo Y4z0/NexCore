@@ -9,8 +9,8 @@
   file:
     path: "{{ wp_dir }}"
     state: directory
-    owner: "{{ wp_user }}"
-    group: "{{ wp_group }}"
+    owner: "{{ webserver_user }}"
+    group: "{{ webserver_group }}"
     mode: '0755'
 
 - name: Check if WordPress is already installed
@@ -24,15 +24,15 @@
       /usr/local/bin/wp core download
       --path={{ wp_dir }}
       --locale={{ wp_locale }}
-  become_user: "{{ wp_user }}"
+  become_user: "{{ webserver_user }}"
   when: not wp_installed.stat.exists
 
 - name: Deploy wp-config.php from template
   template:
     src: wp-config.php.j2
     dest: "{{ wp_dir }}/wp-config.php"
-    owner: "{{ wp_user }}"
-    group: "{{ wp_group }}"
+    owner: "{{ webserver_user }}"
+    group: "{{ webserver_group }}"
     mode: '0640'
   when: not wp_installed.stat.exists
 
@@ -46,15 +46,15 @@
       --admin_password={{ vault_wp_admin_password }}
       --admin_email={{ wp_admin_email }}
       --path={{ wp_dir }}
-  become_user: "{{ wp_user }}"
+  become_user: "{{ webserver_user }}"
   when: not wp_installed.stat.exists
   no_log: true
 
 - name: Set secure file permissions for WordPress files
   file:
     path: "{{ wp_dir }}"
-    owner: "{{ wp_user }}"
-    group: "{{ wp_group }}"
+    owner: "{{ webserver_user }}"
+    group: "{{ webserver_group }}"
     mode: '0755'
     recurse: yes
   when: not wp_installed.stat.exists
@@ -62,8 +62,8 @@
 - name: Set strict permissions on wp-config.php
   file:
     path: "{{ wp_dir }}/wp-config.php"
-    owner: "{{ wp_user }}"
-    group: "{{ wp_group }}"
+    owner: "{{ webserver_user }}"
+    group: "{{ webserver_group }}"
     mode: '0640'
   when: not wp_installed.stat.exists
 
@@ -71,8 +71,8 @@
   file:
     path: "{{ wp_dir }}/wp-content/uploads"
     state: directory
-    owner: "{{ wp_user }}"
-    group: "{{ wp_group }}"
+    owner: "{{ webserver_user }}"
+    group: "{{ webserver_group }}"
     mode: '0775'
   when: not wp_installed.stat.exists
 
@@ -92,17 +92,6 @@
     state: present
   notify: restorecon wordpress
 
-- name: Allow Nginx/PHP-FPM to connect to the network (SELinux)
-  seboolean:
-    name: httpd_can_network_connect
-    state: yes
-    persistent: yes
-
-- name: Allow Nginx/PHP-FPM to connect to the database (SELinux)
-  seboolean:
-    name: httpd_can_network_connect_db
-    state: yes
-    persistent: yes
 
 # --- Firewall  ---
 

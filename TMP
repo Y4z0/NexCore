@@ -1,24 +1,24 @@
 ---
 - name: Install EPEL repository
-  dnf:
+  ansible.builtin.dnf:
     name: epel-release
     state: present
 
 - name: Install Remi repository
-  dnf:
+  ansible.builtin.dnf:
     name: "https://rpms.remirepo.net/enterprise/remi-release-{{ ansible_distribution_major_version }}.rpm"
     state: present
     disable_gpg_check: true
 
 - name: Get currently enabled PHP module stream
-  shell:
+  ansible.builtin.shell:
     cmd: "dnf module list php --enabled 2>/dev/null | awk '/remi/{print $2}' | head -1"
   register: current_php_stream
   changed_when: false
-  failed_when: false
+  failed_when:  false
 
-- name: Remove all installed PHP packages
-  shell:
+- name: Remove all installed PHP packages 
+  ansible.builtin.shell:
     cmd: "dnf remove -y 'php*' 2>/dev/null || true"
   when:
     - current_php_stream.stdout | length > 0
@@ -26,7 +26,7 @@
   changed_when: true
 
 - name: Reset PHP module stream
-  shell:
+  ansible.builtin.shell:
     cmd: dnf module reset php -y
   when:
     - current_php_stream.stdout | length > 0
@@ -34,16 +34,13 @@
   changed_when: true
 
 - name: Enable PHP module stream
-  shell:
+  ansible.builtin.shell:
     cmd: "dnf module enable php:remi-{{ php_version }} -y"
-  register: enable_php_stream
-  failed_when: enable_php_stream.rc != 0
-  changed_when: "'Nothing to do' not in enable_php_stream.stdout"
+  changed_when: true
 
-- name: Install required PHP extensions
-  dnf:
+- name: Install PHP and WordPress required extensions
+  ansible.builtin.dnf:
     name:
-      - php-cli
       - php-fpm
       - php-mysqlnd
       - php-curl
@@ -54,11 +51,10 @@
       - php-intl
       - php-imagick
       - php-bcmath
-      - php-sodium
     state: present
 
 - name: Configure PHP upload limits
-  lineinfile:
+  ansible.builtin.lineinfile:
     path:   /etc/php.ini
     regexp: "{{ item.regexp }}"
     line:   "{{ item.line }}"
@@ -71,7 +67,7 @@
   notify: restart php-fpm
 
 - name: Configure PHP-FPM pool to run as nginx user
-  lineinfile:
+  ansible.builtin.lineinfile:
     path:   /etc/php-fpm.d/www.conf
     regexp: "{{ item.regexp }}"
     line:   "{{ item.line }}"

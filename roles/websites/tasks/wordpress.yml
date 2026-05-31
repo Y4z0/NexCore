@@ -1,4 +1,9 @@
 ---
+- name: Check if WordPress is already installed
+  stat:
+    path: "{{ wp_dir }}/ansible_install"
+  register: wp_installed
+
 - name: Install WP-CLI for WordPress management
   get_url:
     url: https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
@@ -12,11 +17,6 @@
     owner: "{{ webserver_user }}"
     group: "{{ webserver_group }}"
     mode: '0755'
-
-- name: Check if WordPress is already installed
-  stat:
-    path: "{{ wp_dir }}/wp-config.php"
-  register: wp_installed
 
 - name: Download WordPress core files
   shell: 
@@ -83,6 +83,13 @@
     insertbefore: "^/\\* That's all"
   when: not wp_installed.stat.exists
 
+- name: Create WordPress installation flag 
+  file:
+    path: "{{ wp_dir }}/ansible_install"
+    state: touch
+    mode:  "0644"
+  when: not wp_installed.stat.exists
+  
 # --- SELinux ---
 
 - name: Set SELinux context for WordPress directory
@@ -93,18 +100,3 @@
   notify: restorecon wordpress
 
 
-# --- Firewall  ---
-
-- name: Open HTTP port in firewalld
-  firewalld:
-    service: http
-    permanent: yes
-    state: enabled
-    immediate: yes
-
-- name: Open HTTPS port in firewalld
-  firewalld:
-    service: https
-    permanent: yes
-    state: enabled
-    immediate: yes

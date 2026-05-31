@@ -1,5 +1,5 @@
 
-php_version: "8.1"
+php_version: "8.2"
 shell: "/bin/bash"
 webserver_user: nginx
 webserver_group: nginx
@@ -55,7 +55,7 @@ mediawiki_minor: "1.45.3"
 mediawiki_domain: wiki.nexcore.local
 mediawiki_name: "NexCore Wiki"
 mediawiki_install_dir: /var/www/mediawiki
-
+mediawiki_db_type: mysql
 mediawiki_db_name: nexcore_wiki
 mediawiki_db_user: nexcore_wikiuser
 mediawiki_db_password: "{{ vault_mediawiki_db_password }}"

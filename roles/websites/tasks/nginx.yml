@@ -43,3 +43,12 @@
     name: httpd_can_network_connect_db
     state: yes
     persistent: yes
+
+# --- Firewall  ---
+
+- name: Open HTTP port in firewalld
+  firewalld:
+    service: http
+    permanent: yes
+    state: enabled
+    immediate: yes

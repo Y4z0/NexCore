@@ -105,7 +105,7 @@
 - name: Create MediaWiki DB user
   community.mysql.mysql_user:
     name:     "{{ mediawiki_db_user }}"
-    password: "{{ vault_mediawiki_password }}"
+    password: "{{ vault_mediawiki_db_password }}"
     priv:     "{{ mediawiki_db_name }}.*:ALL"
     host:     "{{ hostvars['serverc']['ansible_default_ipv4']['address'] }}"
     state:    present

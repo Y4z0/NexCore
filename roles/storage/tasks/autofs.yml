@@ -1,0 +1,34 @@
+---
+- name: Install autofs
+  dnf:
+    name:  autofs
+    state: present
+
+- name: Deploy auto.master include entry
+  lineinfile:
+    path:   /etc/auto.master
+    line:   "/- /etc/auto.nexcore"
+    state:  present
+    create: true
+  notify: Restart autofs
+
+- name: Deploy per-user AutoFS map
+  template:
+    src:   auto.nexcore.j2
+    dest:  /etc/auto.nexcore
+    owner: root
+    group: root
+    mode:  "0644"
+  notify: Restart autofs
+
+- name: Enable and start autofs
+  service:
+    name:    autofs
+    enabled: true
+    state:   started
+
+- name: Set SELinux boolean for NFS home dirs
+  seboolean:
+    name:       use_nfs_home_dirs
+    state:      true
+    persistent: true

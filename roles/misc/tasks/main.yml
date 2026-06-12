@@ -1,3 +1,4 @@
+# OS check and package update/install
 - name: Verify target is a RHEL-based system
   assert:
     that:
@@ -10,12 +11,53 @@
     state: latest
     update_cache: true
 
-- name: Make sure wget and tar are installed
+- name: Make sure required packages are installed
   ansible.builtin.dnf:
     name:
+      - python3-libsemanage
       - wget
       - tar
     state: present
+
+# Firewalld rules
+
+- name: Get enabled services
+  command: firewall-cmd --zone=public --list-services
+  register: firewalld_services
+  changed_when: false
+
+- name: Remove all services from zone
+  ansible.posix.firewalld:
+    zone: public
+    service: "{{ item }}"
+    state: disabled
+    permanent: true
+    immediate: true
+  loop: "{{ firewalld_services.stdout.split() }}"
+
+- name: Enable services in firewalld
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    state: enabled
+    permanent: true
+    immediate: true
+  loop:
+    - mysql
+    - dns
+    - ssh
+    - http
+    - nfs
+    - rpc-bind
+    - mountd
+
+- name: Open SMTP port 25 in firewalld
+  ansible.posix.firewalld:
+    port:      "25/tcp"
+    permanent: true
+    state:     enabled
+    immediate: true
+
+# DNS setup via nmcli
 
 - name: Get active NetworkManager connection name
   ansible.builtin.command:

@@ -64,7 +64,7 @@
       --dbname {{ mediawiki_db_name }}
       --dbuser {{ mediawiki_db_user }}
       --dbpass {{ mediawiki_db_password }}
-      --dbserver "{{ hostvars['serverb']['ansible_default_ipv4']['address'] }}"
+      --dbserver "{{ dns_serverb_ip }}"
       --pass {{ mediawiki_admin_password }}
       --scriptpath ""
       --server "http://{{ mediawiki_domain }}"

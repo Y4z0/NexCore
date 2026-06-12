@@ -1,0 +1,12 @@
+---
+- name: LVM setup 
+  import_tasks: lvm.yml
+  when: inventory_hostname == 'serverb'
+
+- name: NFS setup 
+  import_tasks: nfs.yml
+  when: inventory_hostname in ['servera', 'serverb']
+
+- name: AutoFS setup 
+  import_tasks: autofs.yml
+  when: inventory_hostname in ['servera', 'serverb']

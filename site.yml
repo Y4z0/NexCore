@@ -4,6 +4,7 @@
   roles:
     - misc
     - users
+    - storage
 
 - name: Configure database
   hosts: database
@@ -18,11 +19,20 @@
 
   
   post_tasks:
-    - name: Deployment summary
+    - name: WordPress deployment summary
       debug:
         msg:
           - "WordPress deployed successfully"
           - "Site URL : http://{{ wp_domain }}"
           - "Admin URL: http://{{ wp_domain }}/wp-admin"
+          - "DB name  : {{ wp_db_name }}"
+          - "Admin user: {{ wp_admin_user }}"
+          
+  post_tasks:
+    - name: MediaWiki deployment summary
+      debug:
+        msg:
+          - "WordPress deployed successfully"
+          - "Site URL : http://{{ mediawiki_domain }}"
           - "DB name  : {{ wp_db_name }}"
           - "Admin user: {{ wp_admin_user }}"

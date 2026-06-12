@@ -1,0 +1,6 @@
+# Managed by Ansible – do not edit manually
+# AutoFS direct map: per-user Company_Share mounts
+# Format: /mountpoint  -options  server:/export
+{% for user in nexcore_users %}
+/home/{{ user.name }}/Company_Share  -rw,sync,soft,intr  {{ nfs_server }}:{{ nfs_users_path }}/{{ user.name }}
+{% endfor %}

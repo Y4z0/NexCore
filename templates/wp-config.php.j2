@@ -29,7 +29,7 @@ define( 'DB_USER', '{{ wp_db_user }}' );
 define( 'DB_PASSWORD', '{{ vault_wp_db_password }}' );
 
 /** Database hostname */
-define( 'DB_HOST', '{{ hostvars['serverb']['ansible_default_ipv4']['address'] }}' );
+define( 'DB_HOST', '{{ dns_serverb_ip }}' );
 
 /** Database charset to use in creating database tables. */
 define( 'DB_CHARSET', 'utf8mb4' );

@@ -34,7 +34,6 @@
     login_unix_socket: /var/lib/mysql/mysql.sock   
     state: present
   when: mysql_root_check.rc == 0
-  no_log: true
 
 - name: Remove anonymous MariaDB users
   mysql_user:
@@ -78,14 +77,6 @@
     state: absent
     login_unix_socket: /var/lib/mysql/mysql.sock
 
-# Firewall
-- name: Add in firewalld
-  firewalld:
-    service: mysql
-    permanent: yes
-    state: enabled
-    immediate: yes
-
 # Wordpress DB
 - name: Create WordPress database
   mysql_db:
@@ -99,7 +90,7 @@
     name: "{{ wp_db_user }}"
     password: "{{ vault_wp_db_password }}"
     priv: "{{ wp_db_name }}.*:ALL"
-    host:     "{{ hostvars['servera']['ansible_default_ipv4']['address'] }}"
+    host:     "{{ dns_servera_ip }}"
     state: present
     login_unix_socket: /var/lib/mysql/mysql.sock
 
@@ -116,6 +107,6 @@
     name:     "{{ mediawiki_db_user }}"
     password: "{{ vault_mediawiki_db_password }}"
     priv:     "{{ mediawiki_db_name }}.*:ALL"
-    host:     "{{ hostvars['servera']['ansible_default_ipv4']['address'] }}"
+    host:     "{{ dns_servera_ip }}"
     state:    present
     login_unix_socket: /var/lib/mysql/mysql.sock

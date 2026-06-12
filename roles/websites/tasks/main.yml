@@ -1,4 +1,7 @@
 ---
+- name: Configure Nginx
+  import_tasks: nginx.yml
+  
 - name: Configure PHP
   import_tasks: php-fpm.yml
 
@@ -8,5 +11,3 @@
 - name: Install MediaWiki
   import_tasks: mediawiki.yml
 
-- name: Configure Nginx
-  import_tasks: nginx.yml

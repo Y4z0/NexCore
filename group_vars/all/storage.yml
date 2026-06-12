@@ -1,0 +1,10 @@
+#  LVM 
+lvm_vg_name:         "vg1"
+lvm_lv_name:         "nexcore_lv"
+lvm_lv_size:         "8g"
+lvm_device:          "/dev/sdb" 
+
+#  NFS  
+nfs_export_path:     "/mnt/shared"
+nfs_users_path:      "/mnt/shared/users"
+nfs_server:          "serverb.nexcore.local"

@@ -1,0 +1,49 @@
+# NFS subdirectories ────────────────────────────────────────
+- name: Create users subdirectory on NFS share
+  file:
+    path:  "{{ nfs_users_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode:  "0755"
+
+- name: Create per-user subdirectories on NFS server
+  file:
+    path:  "{{ nfs_users_path }}/{{ item.name }}"
+    state: directory
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+    mode:  "0700"
+  loop: "{{ nexcore_users }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+# NFS server
+- name: Install NFS utilities
+  dnf:
+    name:
+      - nfs-utils
+    state: present
+
+- name: Deploy /etc/exports
+  template:
+    src:   exports.j2
+    dest:  /etc/exports
+    owner: root
+    group: root
+    mode:  "0644"
+  notify:
+    - Export NFS shares
+    - Restart nfs-server
+
+- name: Enable and start nfs-server
+  service:
+    name:    nfs-server
+    enabled: true
+    state:   started
+
+- name: Set SELinux boolean to allow NFS home dirs
+  seboolean:
+    name:       use_nfs_home_dirs
+    state:      true
+    persistent: true

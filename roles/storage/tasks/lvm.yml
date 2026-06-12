@@ -1,0 +1,40 @@
+- name: Install LVM
+  dnf:
+    name:  lvm2
+    state: present
+
+- name: Create volume group on dedicated disk
+  lvg:
+    vg:       "{{ lvm_vg_name }}"
+    pvs:      "{{ lvm_device }}"
+    state:    present
+
+- name: Create logical volume for shared storage
+  lvol:
+    vg:     "{{ lvm_vg_name }}"
+    lv:     "{{ lvm_lv_name }}"
+    size:   "{{ lvm_lv_size }}"
+    state:  present
+
+- name: Format logical volume with XFS
+  filesystem:
+    fstype: xfs
+    dev:    "/dev/{{ lvm_vg_name }}/{{ lvm_lv_name }}"
+    state:  present
+
+- name: Create mount point
+
+  file:
+    path:  "{{ nfs_export_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode:  "0755"
+
+- name: Mount the shared LV
+  mount:
+    path:   "{{ nfs_export_path }}"
+    src:    "/dev/{{ lvm_vg_name }}/{{ lvm_lv_name }}"
+    fstype: xfs
+    opts:   defaults
+    state:  mounted

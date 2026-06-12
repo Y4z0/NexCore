@@ -1,7 +1,10 @@
-vault_mariadb_root_password: "root-password-here"
+vault_mariadb_root_password: "ChangeMEE"
 
-vault_wp_db_password: vault_mediawiki_db_password
-vault_wp_admin_password: "admin-password-here"
+vault_wp_db_password: "ChangeMEE-now"
+vault_wp_admin_password: "ChangeMEE-now"
+
+vault_mediawiki_db_password: "ChangeMEE-now"
+vault_mediawiki_admin_password: "ChangeMEE-now"
 
 vault_auth_key: "8BOlmA8F$Fhh .<w$}xYR*TGD.;y7-ta qYGT9Ea8Eq@td#FZOVC?=wMkgWN-K}p"
 vault_secure_auth_key: "+A:2@/bH~9i}L(.(3[wQL)`j+>Q>I&GY)!rOJ.3KG^2<>^;>-SI+Wm&4)7V=<%M:"
@@ -11,7 +14,3 @@ vault_auth_salt: "%2<G/*<~8Hidib+lm<fQ}jd5|}4{Dm!G.KaS+EF(;9Fqf]Kpc`,rS41v4t3f~U
 vault_secure_auth_salt: "`=3???_(+nd}MG|Uoy9-u$] k/Z1w+NR-]5-=[DIW)*m R>&x]3wrP2zUisY:+.Q"
 vault_logged_in_salt: "ifMZZgLc1^l&mfMvsY7sa#]|QU3?W<uYuyAoweN|R9{ c9DGOK-}X|n;w8a0UiD?"
 vault_nonce_salt: "YYsX|`jdIQl-Bd^*lyovSk|XBR1U!;-U-bGW?ebv6E~6`|]ZtJWL$Y+D_aN_qsRt"
-
-
-vault_mediawiki_db_password: "db-password-here"
-vault_mediawiki_admin_password: "admin-password-here"

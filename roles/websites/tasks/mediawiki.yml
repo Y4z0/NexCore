@@ -54,6 +54,7 @@
   shell:
     cmd: /usr/local/bin/composer install --no-dev
     chdir: /var/www/mediawiki
+  when: not mediawiki_installed.stat.exists
 
 - name: Install MediaWiki
   shell:
@@ -63,7 +64,7 @@
       --dbname {{ mediawiki_db_name }}
       --dbuser {{ mediawiki_db_user }}
       --dbpass {{ mediawiki_db_password }}
-      --dbserver "{{ hostvars['serverc']['ansible_default_ipv4']['address'] }}"
+      --dbserver "{{ hostvars['serverb']['ansible_default_ipv4']['address'] }}"
       --pass {{ mediawiki_admin_password }}
       --scriptpath ""
       --server "http://{{ mediawiki_domain }}"
@@ -79,7 +80,8 @@
     path: "{{ mediawiki_install_dir }}/ansible_install"
     state: touch
     mode:  "0644"
-    
+  when: not mediawiki_installed.stat.exists
+   
 # --- SELinux ---
 
 - name: Set SELinux file context for MediaWiki directory
@@ -87,4 +89,4 @@
     target:  "{{ mediawiki_install_dir }}(/.*)?"
     setype:  httpd_sys_rw_content_t
     state:   present
-  notify: Restore mediawiki selinux context
+  notify: restorecon mediawiki

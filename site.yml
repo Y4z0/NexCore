@@ -1,40 +1,22 @@
 ---
-- name: Deploy
-  hosts: all_servers
-  pre_tasks:
-    - name: Verify target is a RHEL-based system
-      assert:
-        that:
-          - ansible_os_family == "RedHat"
-        fail_msg: "This playbook is intended for RHEL-based systems only (got: {{ ansible_os_family }})"
-
-    - name: Update all packages to latest
-      dnf:
-        name: "*"
-        state: latest
-        update_cache: true
-
-    - name: Make sure wget and tar are installed
-      ansible.builtin.dnf:
-        name:
-          - wget
-          - tar
-        state: present
-
-- name: Create users
+- name: Deploy on all servers
   hosts: all_servers
   roles:
+    - misc
     - users
+
+- name: Configure database
+  hosts: database
+  roles:
+    - database
 
 - name: Configure webserver
   hosts: web
   roles:
     - websites
+    - dns
 
-- name: Configure database
-  hosts: web
-  roles:
-    - database
+  
   post_tasks:
     - name: Deployment summary
       debug:

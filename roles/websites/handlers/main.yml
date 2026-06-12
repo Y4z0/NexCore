@@ -13,6 +13,6 @@
   command: restorecon -Rv {{ wp_dir }}
   changed_when: false
 
-- name: restorecon wordpress
+- name: restorecon mediawiki
   command: restorecon -Rv {{ mediawiki_install_dir }}
   changed_when: false

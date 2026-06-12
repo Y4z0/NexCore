@@ -48,7 +48,6 @@
       --path={{ wp_dir }}
   become_user: "{{ webserver_user }}"
   when: not wp_installed.stat.exists
-  no_log: true
 
 - name: Set secure file permissions for WordPress files
   file:

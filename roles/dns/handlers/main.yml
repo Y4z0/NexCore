@@ -1,0 +1,10 @@
+---
+- name: Restart named
+  ansible.builtin.service:
+    name:  named
+    state: restarted
+
+- name: Restore selinux context
+  ansible.builtin.command:
+    cmd: restorecon -Rv /var/named
+  changed_when: true

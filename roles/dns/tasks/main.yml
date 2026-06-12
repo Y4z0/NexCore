@@ -1,0 +1,54 @@
+- name: Install BIND packages
+  ansible.builtin.dnf:
+    name:
+      - bind
+      - bind-utils
+    state: present
+
+- name: Create /var/named 
+  ansible.builtin.file:
+    path:  /var/named
+    owner: named
+    group: named
+    mode:  "0770"
+    state: directory
+
+- name: Set SELinux context on  DNS zone dir
+  community.general.sefcontext:
+    target:  "/var/named(/.*)?"
+    setype:  named_zone_t
+    state:   present
+  notify: Restore selinux context
+
+- name: Deploy named.conf
+  ansible.builtin.template:
+    src:   named.conf.j2
+    dest:  /etc/named.conf
+    owner: named
+    group: named
+    mode:  "0640"
+  notify: Restart named
+
+- name: Deploy nexcore zone file
+  ansible.builtin.template:
+    src:   nexcore.local.zone.j2
+    dest:  "{{ dns_zone_file }}"
+    owner: named
+    group: named
+    mode:  "0640"
+  notify: Restart named
+
+- name: Enable and start named
+  ansible.builtin.service:
+    name:    named
+    enabled: true
+    state:   started
+
+- name: Open DNS port in firewalld
+  ansible.posix.firewalld:
+    service:   dns
+    permanent: true
+    state:     enabled
+    immediate: true
+
+

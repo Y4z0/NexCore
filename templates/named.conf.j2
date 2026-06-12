@@ -1,0 +1,21 @@
+// Managed by Ansible – do not edit manually
+
+acl internal-networks { 127.0.0.1; 192.168.1.0/24; 172.25.250.0/24; };
+
+options {
+    directory               "/var/named"; 
+    listen-on port 53 { 127.0.0.1; {{ ansible_default_ipv4.address }}; };
+    listen-on-v6 port 53 { ::1; };    
+    allow-query      { localhost; internal-networks; }; 
+    allow-recursion { localhost; internal-networks; };   
+    forwarders       { 8.8.8.8; 1.1.1.1; };
+    };
+
+
+zone "{{ dns_zone }}" IN {
+    type master;
+    file "{{ dns_zone_file }}";
+    allow-update { none; };
+};
+
+

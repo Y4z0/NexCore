@@ -1,0 +1,21 @@
+$TTL 86400
+@   IN  SOA servera.{{ dns_zone }}. admin.{{ dns_zone }}. (
+            {{ ansible_date_time.epoch }}  ; Serial
+            3600        ; Refresh
+            1800        ; Retry
+            604800      ; Expire
+            86400 )     ; Minimum TTL
+
+; Name servers
+@       IN  NS  servera.{{ dns_zone }}.
+
+; Server A records
+servera IN  A   {{ dns_servera_ip }}
+serverb IN  A   {{ dns_serverb_ip }}
+
+; Website records
+www     IN  A   {{ dns_servera_ip }}
+wiki    IN  A   {{ dns_servera_ip }}
+
+; Mail records 
+@       IN  MX  10 servera.{{ dns_zone }}.

@@ -1,0 +1,6 @@
+dns_zone:            "nexcore.local"
+dns_zone_file:       "/var/named/nexcore.local.zone"
+dns_servera_ip:      "{{ hostvars['servera']['ansible_default_ipv4']['address'] }}"
+dns_serverb_ip:      "{{ hostvars['serverb']['ansible_default_ipv4']['address'] }}"
+
+dns_resolver_ip:     "{{ hostvars['servera']['ansible_default_ipv4']['address'] }}"

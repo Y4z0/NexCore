@@ -12,7 +12,6 @@
     owner: root
     group: root
     mode: "0440"
-    state: present
     validate: /usr/sbin/visudo -cf %s
   when: item.sudo == true
   loop: "{{ nexcore_users }}"

@@ -35,27 +35,44 @@
     immediate: true
   loop: "{{ firewalld_services.stdout.split() }}"
 
-- name: Enable services in firewalld
+- name: Enable common services in firewalld
   ansible.posix.firewalld:
     service: "{{ item }}"
     state: enabled
     permanent: true
     immediate: true
   loop:
-    - mysql
-    - dns
     - ssh
-    - http
     - nfs
     - rpc-bind
     - mountd
 
+- name: Enable web/dns services in firewalld
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    state: enabled
+    permanent: true
+    immediate: true
+  loop:
+    - http
+    - dns
+  when: inventory_hostname in groups['web']
+
+- name: Enable database services in firewalld
+  ansible.posix.firewalld:
+    service: mysql
+    state: enabled
+    permanent: true
+    immediate: true
+  when: inventory_hostname in groups['database']
+
 - name: Open SMTP port 25 in firewalld
   ansible.posix.firewalld:
-    port:      "25/tcp"
+    port: "25/tcp"
     permanent: true
-    state:     enabled
+    state: enabled
     immediate: true
+  when: inventory_hostname in groups['web']
 
 # DNS setup via nmcli
 

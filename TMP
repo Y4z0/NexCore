@@ -1,7 +1,11 @@
-[root@localhost ~]# cat /etc/hosts
-127.0.0.1    rocky-gui.test.com localhost localhost.localdomain localhost4 localhost4.localdomain4
-::1          rocky-gui.test.com localhost localhost.localdomain localhost6 localhost6.localdomain6
-
-192.168.1.14 serverc.nexcore.local 
-192.168.1.16 servera.nexcore.local www.nexcore.local wiki.nexcore.local
-192.168.1.17 serverb.nexcore.local
+          - "Postfix deployment summary"
+          - "Domain         : {{ postfix_mydomain }}"
+          - "Hostname       : {{ postfix_myhostname }}"
+          - "Networks       : {{ postfix_mynetworks }}"
+          - "Log            : /var/log/maillog"
+          - " "
+          - "Configured mailboxes:"
+          - "{% for user in nexcore_users %}  - {{ user.name }}@{{ postfix_mydomain }}{% endfor %}"
+          - " "
+          - "Test email sent to ops01@{{ postfix_mydomain }}"
+          - "--------------****--------------"

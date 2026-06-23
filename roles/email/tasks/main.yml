@@ -1,0 +1,29 @@
+---
+- name: Install Postfix and mailx
+  ansible.builtin.dnf:
+    name:
+      - postfix
+      - s-nail
+    state: present
+
+- name: Deploy main.cf
+  ansible.builtin.template:
+    src:   main.cf.j2
+    dest:  /etc/postfix/main.cf
+    owner: root
+    group: root
+    mode:  "0644"
+  notify: Restart postfix
+
+- name: Enable and start Postfix
+  ansible.builtin.service:
+    name:    postfix
+    enabled: true
+    state:   started
+
+- name: Send test mail to ops01 
+  ansible.builtin.shell:
+    cmd: >
+      echo "Ansible mail test - {{ ansible_date_time.iso8601 }}"
+      | mail -s "Ansible Test" ops01@{{ postfix_mydomain }}
+  changed_when: false

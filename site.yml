@@ -16,10 +16,11 @@
   roles:
     - websites
     - dns
+    - email
 
-  
+  # Website summary 
   post_tasks:
-    - name: WordPress deployment summary
+    - name: Website deployment summary
       debug:
         msg:
           - "WordPress deployed successfully"
@@ -27,12 +28,33 @@
           - "Admin URL: http://{{ wp_domain }}/wp-admin"
           - "DB name  : {{ wp_db_name }}"
           - "Admin user: {{ wp_admin_user }}"
-          
-  post_tasks:
-    - name: MediaWiki deployment summary
-      debug:
-        msg:
-          - "WordPress deployed successfully"
+          - " "
+          - "--------------****--------------"
+          - " "
+          - "MediaWiki deployed successfully"
           - "Site URL : http://{{ mediawiki_domain }}"
-          - "DB name  : {{ wp_db_name }}"
-          - "Admin user: {{ wp_admin_user }}"
+          - "DB name  : {{ mediawiki_db_name }}"
+          - "Admin user: {{ mediawiki_admin_user }}"
+          - " "
+          - "--------------****--------------"
+          - " "
+    - name: Email summary
+      debug:
+        msg: >-
+          {{
+          [
+            '--------------****--------------',
+            'Postfix deployment summary',
+            '--------------****--------------',
+            'Domain         : ' + postfix_mydomain,
+            'Hostname       : ' + postfix_myhostname,
+            'Networks       : ' + postfix_mynetworks,
+            'Log            : /var/log/maillog',
+            'Configured mailboxes:'
+          ]
+          + nexcore_users | map(attribute='name') | map('regex_replace','^(.*)$','  \1@' + postfix_mydomain) | list
+          + [
+            'Test email sent to ops01@' + postfix_mydomain,
+            '--------------****--------------'
+          ]
+          }}

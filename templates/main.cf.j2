@@ -1,0 +1,33 @@
+# Postfix 
+myhostname    = {{ postfix_myhostname }}
+mydomain      = {{ postfix_mydomain }}
+myorigin      = {{ postfix_mydomain }}
+inet_interfaces = all
+inet_protocols  = ipv4
+
+mydestination = $myhostname, localhost.{{ postfix_mydomain }}, localhost, {{ postfix_mydomain }}
+mynetworks    = {{ postfix_mynetworks }}
+
+# Local delivery
+home_mailbox = Maildir/
+mail_spool_directory =
+
+# Disable relay for external domains
+relayhost     =
+smtpd_relay_restrictions =
+    permit_mynetworks,
+    reject_unauth_destination
+
+# Queue settings
+maximal_queue_lifetime = 3d
+bounce_queue_lifetime = 1d
+maximal_backoff_time = 4000s
+minimal_backoff_time = 300s
+queue_run_delay = 300s
+
+# Alias maps
+alias_maps     = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+
+
+

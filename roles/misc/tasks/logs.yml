@@ -8,6 +8,15 @@
     mode:  "0750"
   when: inventory_hostname == 'servera'
 
+- name: Create remote health log file
+  file:
+    path:  "{{ remote_log_dir }}/serverb-health.log"
+    state: touch
+    owner: root
+    group: root
+    mode:  "0640"
+  when: inventory_hostname == 'servera'
+
 - name: Deploy rsyslog server config 
   template:
     src:   rsyslog-servera.conf.j2

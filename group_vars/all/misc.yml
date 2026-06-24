@@ -9,7 +9,7 @@ syslog_port:         514
 syslog_protocol:     "tcp"
 remote_log_dir:      "/var/log/remote"
 serverb_log_file:    "/var/log/remote/serverb.log"
-
+serverb_health_file: "/var/log/remote/serverb-health.log"
 
 health_log:          "/var/log/nexcore-health.log"
 health_script:       "/usr/local/bin/nexcore-health-check.sh"

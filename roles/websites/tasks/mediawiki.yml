@@ -53,17 +53,17 @@
 - name: Install MediaWiki Composer dependencies
   shell:
     cmd: /usr/local/bin/composer install --no-dev
-    chdir: /var/www/mediawiki
+    chdir: {{ mediawiki_install_dir }}
   when: not mediawiki_installed.stat.exists
 
 - name: Install MediaWiki
   shell:
     cmd: >
       php maintenance/run.php install
-      --dbtype {{ mediawiki_db_type }}
-      --dbname {{ mediawiki_db_name }}
-      --dbuser {{ mediawiki_db_user }}
-      --dbpass {{ mediawiki_db_password }}
+      --dbtype  {{ mediawiki_db_type }}
+      --dbname  {{ mediawiki_db_name }}
+      --dbuser  {{ mediawiki_db_user }}
+      --dbpass '{{ mediawiki_db_password }}'
       --dbserver "{{ dns_serverb_ip }}"
       --pass {{ mediawiki_admin_password }}
       --scriptpath ""

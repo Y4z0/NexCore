@@ -82,8 +82,6 @@
     mode:  "0644"
   when: not mediawiki_installed.stat.exists
    
-# --- SELinux ---
-
 - name: Set SELinux file context for MediaWiki directory
   sefcontext:
     target:  "{{ mediawiki_install_dir }}(/.*)?"

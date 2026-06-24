@@ -12,4 +12,4 @@
   import_tasks: logs.yml
 
 - name: Setup healthcheck
-  import_tasks: healthcheck.yml
+  import_tasks: health-check.yml

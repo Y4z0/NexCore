@@ -1,5 +1,5 @@
 # Managed by Ansible – do not edit manually
-# rsyslog client config: forward all logs to servera via TCP {{ syslog_port }}
+# rsyslog client config: forward all logs to servera
 
 *.* action(type="omfwd"
            target="{{ syslog_server }}"

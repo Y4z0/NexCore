@@ -63,9 +63,9 @@
       --dbtype  {{ mediawiki_db_type }}
       --dbname  {{ mediawiki_db_name }}
       --dbuser  {{ mediawiki_db_user }}
-      --dbpass '{{ mediawiki_db_password }}'
+      --dbpass '{{ vault_mediawiki_db_password }}'
       --dbserver "{{ dns_serverb_ip }}"
-      --pass {{ mediawiki_admin_password }}
+      --pass {{ vault_mediawiki_admin_password }}
       --scriptpath ""
       --server "http://{{ mediawiki_domain }}"
       "{{ mediawiki_name }}" "{{ mediawiki_admin_user }}"

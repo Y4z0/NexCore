@@ -26,9 +26,3 @@
     name:    autofs
     enabled: true
     state:   started
-
-- name: Set SELinux boolean for NFS home dirs
-  seboolean:
-    name:       use_nfs_home_dirs
-    state:      true
-    persistent: true

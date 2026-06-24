@@ -1,4 +1,3 @@
-# NFS server
 - name: Install NFS utilities
   dnf:
     name:
@@ -28,7 +27,6 @@
     state:      true
     persistent: true
 
-# NFS subdirectories ────────────────────────────────────────
 - name: Create users subdirectory on NFS share
   file:
     path:  "{{ nfs_users_path }}"

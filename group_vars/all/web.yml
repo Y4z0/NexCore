@@ -22,6 +22,4 @@ mediawiki_install_dir: /var/www/mediawiki
 mediawiki_db_type: mysql
 mediawiki_db_name: nexcore_wiki
 mediawiki_db_user: nexcore_wikiuser
-mediawiki_db_password: "{{ vault_mediawiki_db_password }}"
 mediawiki_admin_user: WikiAdmin
-mediawiki_admin_password: "{{ vault_mediawiki_admin_password }}"

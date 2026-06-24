@@ -2,4 +2,4 @@
 # NFS exports for NexCore shared storage
 
 # Main shared directory – read-write for all managed servers
-{{ nfs_export_path }}  *(rw,sync,no_root_squash,no_subtree_check)
+{{ nfs_export_path }}  {{ dns_servera_ip }}(rw,sync,no_root_squash,no_subtree_check)

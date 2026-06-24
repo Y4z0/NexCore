@@ -1,8 +1,8 @@
 127.0.0.1     localhost 
-127.0.0.1     {{inventory_hostname}} {{inventory_hostname}}.{{domain}}
+127.0.0.1     {{inventory_hostname}} {{inventory_hostname}}.{{dns_zone}}
 
 # Nexcore hosts
 {% for host in groups['all_servers'] | sort %}
-{{hostvars[host]['ansible_host']}} {{ host }} {{host}}.{{domain}}
+{{hostvars[host]['ansible_default_ipv4']['address']}} {{ host }} {{host}}.{{dns_zone}}
 {% endfor %}
 

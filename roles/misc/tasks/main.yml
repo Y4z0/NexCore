@@ -1,4 +1,7 @@
 ---
+- name: Deploy hosts file
+  import_tasks: hosts.yml
+
 - name: Configure packages
   import_tasks: packages.yml
   

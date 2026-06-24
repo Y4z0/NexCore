@@ -53,7 +53,7 @@
 - name: Install MediaWiki Composer dependencies
   shell:
     cmd: /usr/local/bin/composer install --no-dev
-    chdir: {{ mediawiki_install_dir }}
+    chdir: '{{ mediawiki_install_dir }}'
   when: not mediawiki_installed.stat.exists
 
 - name: Install MediaWiki

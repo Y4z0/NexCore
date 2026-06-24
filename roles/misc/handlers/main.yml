@@ -3,7 +3,12 @@
     name: NetworkManager
     state: restarted
 
-- name: Reload NetworkManager connection
+- name: Reload NetworkManager 
   ansible.builtin.command:
     cmd: nmcli connection up "{{ nm_connection.stdout_lines[0] }}"
   changed_when: true
+
+- name: Restart rsyslog
+  ansible.builtin.service:
+    name:  rsyslog
+    state: restarted

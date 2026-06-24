@@ -1,0 +1,60 @@
+- name: Get enabled services
+  command: firewall-cmd --zone=public --list-services
+  register: firewalld_services
+  changed_when: false
+
+- name: Remove all services from zone
+  firewalld:
+    zone: public
+    service: "{{ item }}"
+    state: disabled
+    permanent: true
+    immediate: true
+  loop: "{{ firewalld_services.stdout.split() }}"
+
+- name: Enable common services in firewalld
+  firewalld:
+    service: "{{ item }}"
+    state: enabled
+    permanent: true
+    immediate: true
+  loop:
+    - ssh
+    - nfs
+    - rpc-bind
+    - mountd
+
+- name: Enable web/dns services in firewalld
+  firewalld:
+    service: "{{ item }}"
+    state: enabled
+    permanent: true
+    immediate: true
+  loop:
+    - http
+    - dns
+  when: inventory_hostname in groups['web']
+
+- name: Enable database services in firewalld
+  firewalld:
+    service: mysql
+    state: enabled
+    permanent: true
+    immediate: true
+  when: inventory_hostname in groups['database']
+
+- name: Open SMTP port 25 in firewalld
+  firewalld:
+    port: "25/tcp"
+    permanent: true
+    state: enabled
+    immediate: true
+  when: inventory_hostname in groups['web']
+
+- name: Open SMTP port 514 in firewalld
+  firewalld:
+    port: "514/tcp"
+    permanent: true
+    state: enabled
+    immediate: true
+  when: inventory_hostname in groups['web']

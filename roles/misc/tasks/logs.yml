@@ -1,0 +1,37 @@
+
+- name: Create remote log directory
+  file:
+    path:  "{{ remote_log_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode:  "0750"
+  when: inventory_hostname == 'servera'
+
+- name: Deploy rsyslog server config 
+  template:
+    src:   rsyslog-servera.conf.j2
+    dest:  /etc/rsyslog.d/10-nexcore-server.conf
+    owner: root
+    group: root
+    mode:  "0644"
+  notify: Restart rsyslog
+  when: inventory_hostname == 'servera'
+
+- name: Set SELinux for syslog port 514
+  community.general.seport:
+    ports:    "{{ syslog_port }}"
+    proto:    tcp
+    setype:   syslogd_port_t
+    state:    present
+  when: inventory_hostname == 'servera'
+
+- name: Deploy rsyslog client config (forward to servera TCP 514)
+  template:
+    src:   rsyslog-serverb.conf.j2
+    dest:  /etc/rsyslog.d/10-nexcore-client.conf
+    owner: root
+    group: root
+    mode:  "0644"
+  notify: Restart rsyslog
+  when: inventory_hostname == 'serverb'

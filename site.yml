@@ -5,8 +5,8 @@
     - misc
     - users
     - storage
-
-- name: Configure database
+  
+- name: Configure database server
   hosts: database
   roles:
     - database
@@ -18,9 +18,8 @@
     - dns
     - email
 
-  # Website summary 
   post_tasks:
-    - name: Website deployment summary
+    - name: Website summary
       debug:
         msg:
           - "WordPress deployed successfully"

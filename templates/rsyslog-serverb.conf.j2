@@ -1,0 +1,10 @@
+# Managed by Ansible – do not edit manually
+# rsyslog client config: forward all logs to servera via TCP {{ syslog_port }}
+
+*.* action(type="omfwd"
+           target="{{ syslog_server }}"
+           port="{{ syslog_port }}"
+           protocol="{{ syslog_protocol }}"
+           action.resumeRetryCount="100"
+           queue.type="LinkedList"
+           queue.size="10000")

@@ -1,0 +1,16 @@
+---
+nexcore_domain:      "nexcore.local"
+nexcore_dns_server:  "servera.nexcore.local"
+nexcore_web_server:  "servera.nexcore.local"
+
+
+syslog_server:       "servera.nexcore.local"
+syslog_port:         514
+syslog_protocol:     "tcp"
+remote_log_dir:      "/var/log/remote"
+serverb_log_file:    "/var/log/remote/serverb.log"
+
+
+health_log:          "/var/log/nexcore-health.log"
+health_script:       "/usr/local/bin/nexcore-health-check.sh"
+ops_email:           "ops01@nexcore.local"

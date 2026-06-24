@@ -1,0 +1,42 @@
+- name: Deploy health check script
+  ansible.builtin.template:
+    src:   health-check.sh.j2
+    dest:  "{{ health_script }}"
+    owner: root
+    group: root
+    mode:  "0755"
+
+- name: Create health log file if not present
+  ansible.builtin.file:
+    path:  "{{ health_log }}"
+    state: touch
+    owner: root
+    group: root
+    mode:  "0644"
+
+- name: Cron daily health check at 03:00
+  ansible.builtin.cron:
+    name:   "Nexcore daily health check"
+    minute: "0"
+    hour:   "3"
+    job:    "{{ health_script }} >> {{ health_log }} 2>&1 && echo 'Health check completed on {{ inventory_hostname }}' | mail -s '[NexCore] Daily Health Check' {{ ops_email }}"
+    state:  present
+    user:   root
+
+- name: Cron weekly dnf cache cleanup Sunday 04:00
+  ansible.builtin.cron:
+    name:    "Nexcore weekly dnf clean"
+    minute:  "0"
+    hour:    "4"
+    weekday: "0"
+    job:     "/usr/bin/dnf clean all >> /var/log/nexcore-dnf-clean.log 2>&1"
+    state:   present
+    user:    root
+
+- name: Deploy logrotate config for health log
+  ansible.builtin.template:
+    src:   logrotate.j2
+    dest:  /etc/logrotate.d/nexcore-health
+    owner: root
+    group: root
+    mode:  "0644"

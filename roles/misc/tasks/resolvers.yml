@@ -1,0 +1,46 @@
+- name: Get active NetworkManager connection name
+  command:
+    cmd: nmcli -g NAME connection show --active
+  register: nm_connection
+  changed_when: false
+
+- name: Get current DNS servers for connection
+  command:
+    cmd: nmcli -g ipv4.dns connection show "{{ nm_connection.stdout_lines[0] }}"
+  register: current_dns
+  changed_when: false
+
+- name: Get current DNS search domain for connection
+  command:
+    cmd: nmcli -g ipv4.dns-search connection show "{{ nm_connection.stdout_lines[0] }}"
+  register: current_dns_search
+  changed_when: false
+
+- name: Get current ignore-auto-dns setting
+  command:
+    cmd: nmcli -g ipv4.ignore-auto-dns connection show "{{ nm_connection.stdout_lines[0] }}"
+  register: current_ignore_auto_dns
+  changed_when: false
+
+- name: Set DNS resolvers via nmcli
+  command:
+    cmd: >
+      nmcli connection modify "{{ nm_connection.stdout_lines[0] }}"
+      ipv4.dns "{{ dns_resolver_ip }} 8.8.8.8 8.8.4.4"
+      ipv4.ignore-auto-dns yes
+  when: >
+    dns_resolver_ip not in current_dns.stdout or
+    '8.8.8.8' not in current_dns.stdout or
+    '8.8.4.4' not in current_dns.stdout or
+    current_ignore_auto_dns.stdout | trim != 'yes'
+  changed_when: true
+  notify: Reload NetworkManager 
+
+- name: Set DNS search domain via nmcli
+  command:
+    cmd: >
+      nmcli connection modify "{{ nm_connection.stdout_lines[0] }}"
+      ipv4.dns-search "{{ dns_zone }}"
+  when: dns_zone not in current_dns_search.stdout
+  changed_when: true
+  notify: Reload NetworkManager 

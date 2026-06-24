@@ -1,0 +1,12 @@
+# Managed by Ansible – do not edit manually
+# rsyslog server config: receive logs from serverb over TCP {{ syslog_port }}
+
+# Load TCP input module
+module(load="imtcp")
+input(type="imtcp" port="{{ syslog_port }}")
+
+# Store logs from serverb in a dedicated file
+if $fromhost-ip == '{{ hostvars['serverb']['ansible_default_ipv4']['address'] }}' then {
+    action(type="omfile" file="{{ serverb_log_file }}")
+    stop
+}

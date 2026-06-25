@@ -30,11 +30,11 @@
     hour:   "3"
     job: >-
       (
-      echo "=== servera ===";
-      tail -n 8 {{ health_log }};
+      echo "--- servera ---";
+      tail -n 14 {{ health_log }};
       echo "";
-      echo "=== serverb ===";
-      tail -n 8 {{ serverb_health_log }};
+      echo "--- serverb ---";
+      tail -n 17 {{ serverb_health_log }} |  cut -d ' ' -f 6- | awk '!seen[$0]++';
       ) | mail -s '[NexCore] Daily Health Check Report' {{ ops_email }}
     state:  present
     user:   root

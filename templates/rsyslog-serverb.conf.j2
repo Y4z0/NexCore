@@ -1,6 +1,8 @@
 # Managed by Ansible – do not edit manually
 # rsyslog client config: forward all logs to servera
 
+module(load="imfile")
+
 # Forward all syslog messages
 *.* action(type="omfwd"
            target="{{ syslog_server }}"
@@ -11,7 +13,6 @@
            queue.size="10000")
 
 # Forward health check log 
-module(load="imfile")
 input(type="imfile"
       File="{{ health_log }}"
       Tag="nexcore-health"

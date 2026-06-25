@@ -11,6 +11,6 @@ remote_log_dir:      "/var/log/remote"
 serverb_sys_log:    "/var/log/remote/serverb.log"
 serverb_health_log: "/var/log/remote/serverb-health.log"
 
-health_log:          "/var/log/{{ hostvars[host]['ansible_hostname'] }}-health.log"
+health_log:          "/var/log/{{ inventory_hostname }}-health.log"
 health_script:       "/usr/local/bin/nexcore-health-check.sh"
 ops_email:           "ops01@nexcore.local"

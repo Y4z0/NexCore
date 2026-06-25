@@ -9,6 +9,7 @@
     name:
       - dnf-automatic
       - logrotate
+      - policycoreutils-python-utils
       - python3-libsemanage
       - wget
       - tar

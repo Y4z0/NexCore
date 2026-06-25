@@ -5,15 +5,16 @@
 module(load="imtcp")
 input(type="imtcp" port="{{ syslog_port }}")
 
-# Store logs from serverb in a dedicated file
+# Store health check log from serverb
+if $syslogtag == 'nexcore-health' and \
+   $fromhost-ip == '{{ hostvars['serverb']['ansible_default_ipv4']['address'] }}' then {
+    action(type="omfile" file="{{ serverb_health_log }}")
+    stop
+}
+
+# Store system logs from serverb 
 if $fromhost-ip == '{{ hostvars['serverb']['ansible_default_ipv4']['address'] }}' then {
     action(type="omfile" file="{{ serverb_sys_log }}")
     stop
 }
 
-# Store health check log lines from serverb separately
-if $syslogtag == 'nexcore-health' and \
-   $fromhost-ip == '{{ hostvars['serverb']['ansible_default_ipv4']['address'] }}' then {
-    action(type="omfile" file="{{ serverb_health_file }}")
-    stop
-}

@@ -5,11 +5,11 @@ HOSTNAME=$(hostname -f)
 UPTIME=$(uptime -p)
 DISK_USAGE=$(df -h --output=source,size,used,avail,pcent | grep -v tmpfs)
 
-echo "========================================"
-echo "NexCore Health Check – $TIMESTAMP"
-echo "Hostname : $HOSTNAME"
-echo "Uptime   : $UPTIME"
+echo "--------------------------------------"
+echo " NexCore Health Check : $TIMESTAMP"
+echo " Hostname : $HOSTNAME"
+echo " Uptime   : $UPTIME"
 echo " "
-echo "Disk Usage:"
-echo "$DISK_USAGE"
-echo "========================================"
+echo " Disk Usage:"
+echo " $DISK_USAGE"
+echo "--------------------------------------"

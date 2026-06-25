@@ -14,14 +14,31 @@
     group: root
     mode:  "0644"
 
-- name: Cron daily health check at 03:00
+- name: Cron daily health check at 03:00 
   cron:
     name:   "Nexcore daily health check"
     minute: "0"
     hour:   "3"
-    job:    "{{ health_script }} >> {{ health_log }} 2>&1 && echo 'Health check completed on {{ inventory_hostname }}' | mail -s '[NexCore] Daily Health Check' {{ ops_email }}"
+    job:    "{{ health_script }} >> {{ health_log }} 2>&1"
     state:  present
     user:   root
+
+- name: Cron daily summary
+  cron:
+    name:   "Nexcore daily health email"
+    minute: "5"
+    hour:   "3"
+    job: >-
+      (
+      echo "=== servera ===";
+      tail -n 8 {{ health_log }};
+      echo "";
+      echo "=== serverb ===";
+      tail -n 8 {{ serverb_health_log }};
+      ) | mail -s '[NexCore] Daily Health Check Report' {{ ops_email }}
+    state:  present
+    user:   root
+  when: inventory_hostname in groups['web']
 
 - name: Cron weekly dnf cache cleanup Sunday 04:00
   cron:

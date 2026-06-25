@@ -7,7 +7,7 @@ input(type="imtcp" port="{{ syslog_port }}")
 
 # Store logs from serverb in a dedicated file
 if $fromhost-ip == '{{ hostvars['serverb']['ansible_default_ipv4']['address'] }}' then {
-    action(type="omfile" file="{{ serverb_log_file }}")
+    action(type="omfile" file="{{ serverb_sys_log }}")
     stop
 }
 
